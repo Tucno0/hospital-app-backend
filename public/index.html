@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Sing-in</title>
+  </head>
+
+  <body>
+    <h1>Google Sing-in</h1>
+    <hr />
+
+    <div id="buttonDiv"></div>
+
+    <!-- script de google para el boton de google sing-in -->
+    <script src="https://accounts.google.com/gsi/client" async></script>
+
+    <script>
+      var url = "http://localhost:3000/api/auth/google";
+      
+      function handleCredentialResponse(response) {
+        console.warn("Encoded JWT ID token: " + response.credential);
+
+        fetch(url, {
+          method: 'POST', // Tipo de petición que estamos realizando al servidor
+          headers: { // Indica el tipo de contenido que estamos enviando al servidor
+            'content-type': 'application/json' // Se está enviando un JSON
+          },
+          body: JSON.stringify({ token: response.credential }) // El cuerpo de la petición es el token
+        })
+        .then(res => res.json()) // Se convierte la respuesta a JSON para poder trabajar con ella
+        .then(data => { // Se recibe la respuesta del servidor
+          console.log('Desde el servidor: ', data);
+          // window.location.href = "http://localhost:3000/"; // Se redirecciona al usuario a la página principal
+        })
+        .catch(err => console.log(err));
+      }
+      
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: "628015100490-8qt22tju8jsqgap5p1aa0f752n86g29j.apps.googleusercontent.com",
+          callback: handleCredentialResponse
+        });
+
+        google.accounts.id.renderButton(
+          document.getElementById("buttonDiv"),
+          { theme: "outline", size: "large" }  // customization attributes
+        );
+        
+        google.accounts.id.prompt(); // also display the One Tap dialog
+      }
+    </script>
+  </body>
+</html>
