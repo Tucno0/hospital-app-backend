@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -13,6 +15,9 @@ import hospitalesRoutes from './routes/hospitales.routes.js';
 import medicosRoutes from './routes/medicos.routes.js';
 import buscarRoutes from './routes/buscar.routes.js';
 import uploadsRoutes from './routes/uploads.routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //* Configurar dotenv para poder usar las variables de entorno
 dotenv.config();
@@ -50,6 +55,12 @@ app.use('/api/roles', rolesRoutes);
 app.use('/api/medicos', medicosRoutes);
 app.use('/api/buscar', buscarRoutes);
 app.use('/api/uploads', uploadsRoutes);
+
+// Lo ultimo
+// Cualquier otra ruta que no sea las anteriores se redirecciona al index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'public/index.html'));
+});
 
 //* levantar el servidor
 app.listen(port, () => {
